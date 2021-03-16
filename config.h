@@ -45,6 +45,7 @@ static const Layout layouts[] = {
 
 /* key definitions */
 #define MODKEY Mod1Mask
+#define SUPERKEY Mod4Mask
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
@@ -56,14 +57,17 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]  = { "termite", NULL };
-static const char *printscreencmd[]  = { "scrot","%Y-%m-%d_%H-%M-%S.jpg","-q100","-e","mkdir --parents ~/images/screenshots","-e","mv $f ~/images/screenshots/", NULL };
+static const char *cmd_launcher[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+static const char *cmd_terminal[]  = { "termite", NULL };
+static const char *cmd_printscreen[]  = { "scrot","%Y-%m-%d_%H-%M-%S.jpg","-q100","-e","mkdir --parents ~/images/screenshots","-e","mv $f ~/images/screenshots/", NULL };
+static const char *cmd_fileexplorer[]  = { "termite", "-e", "lf", NULL };
+
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
-	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
-	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
+	{ SUPERKEY,                     XK_d,      spawn,          {.v = cmd_launcher } },
+	{ SUPERKEY,                     XK_t,      spawn,          {.v = cmd_terminal } },
+	{ SUPERKEY,                     XK_e,      spawn,          {.v = cmd_fileexplorer } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
@@ -95,7 +99,7 @@ static Key keys[] = {
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
-	{0,                             XK_Print,  spawn,          {.v = printscreencmd } },
+	{0,                             XK_Print,  spawn,          {.v = cmd_printscreen } },
 };
 
 /* button definitions */
@@ -105,7 +109,7 @@ static Button buttons[] = {
 	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
 	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
 	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
-	{ ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },
+	{ ClkStatusText,        0,              Button2,        spawn,          {.v = cmd_terminal } },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
