@@ -1,5 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
+#include <X11/XF86keysym.h>
+
 /* appearance */
 static const unsigned int borderpx  = 1;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
@@ -20,7 +22,8 @@ static const char *colors[][3]      = {
 };
 
 /* tagging */
-static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+static const char *tags[] = { "1", "2", "3" };
+
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -46,6 +49,7 @@ static const Layout layouts[] = {
 /* key definitions */
 #define MODKEY Mod1Mask
 #define SUPERKEY Mod4Mask
+
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
@@ -60,14 +64,23 @@ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() 
 static const char *cmd_launcher[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *cmd_terminal[]  = { "termite", NULL };
 static const char *cmd_printscreen[]  = { "scrot","%Y-%m-%d_%H-%M-%S.jpg","-q100","-e","mkdir --parents ~/images/screenshots","-e","mv $f ~/images/screenshots/", NULL };
+static const char *cmd_printedit[]  = { "scrot","%Y-%m-%d_%H-%M-%S.jpg","-q100","-e","mkdir --parents ~/images/screenshots","-e","mv $f ~/images/screenshots/","-e","gimp $f",NULL };
 static const char *cmd_fileexplorer[]  = { "termite", "-e", "lf", NULL };
+static const char *cmd_htop[]  = { "termite", "-e", "htop", NULL };
 
+static const char *mutecmd[] = { "amixer", "-q", "set", "Master", "toggle", NULL };
+static const char *volupcmd[] = { "amixer", "-q", "set", "Master", "5%+", "unmute", NULL };
+static const char *voldowncmd[] = { "amixer", "-q", "set", "Master", "5%-", "unmute", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ SUPERKEY,                     XK_d,      spawn,          {.v = cmd_launcher } },
 	{ SUPERKEY,                     XK_t,      spawn,          {.v = cmd_terminal } },
 	{ SUPERKEY,                     XK_e,      spawn,          {.v = cmd_fileexplorer } },
+	{ ShiftMask|ControlMask,        XK_Escape, spawn,          {.v = cmd_htop } },
+	{ 0,                     XF86XK_AudioMute, spawn,          {.v = mutecmd } },
+	{ 0,              XF86XK_AudioLowerVolume, spawn,          {.v = voldowncmd } },
+	{ 0,              XF86XK_AudioRaiseVolume, spawn,          {.v = volupcmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
@@ -100,6 +113,7 @@ static Key keys[] = {
 	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
 	{0,                             XK_Print,  spawn,          {.v = cmd_printscreen } },
+	{ControlMask,                   XK_Print,  spawn,          {.v = cmd_printedit } },
 };
 
 /* button definitions */
