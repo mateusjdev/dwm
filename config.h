@@ -8,7 +8,7 @@ static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const int user_bh            = 24;       /* 0 means that dwm will calculate bar height, >= 1 means dwm will user_bh as bar height */
-static const char *fonts[]          = { "JetBrainsMono:size=10" };
+static const char *fonts[]          = { "JetBrainsMono:size=10","JoyPixels:pixelsize=12:antialias=true:autohint=true" };
 static const char dmenufont[]       = "JetBrainsMono:size=10"; 
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
@@ -71,10 +71,10 @@ static const char *cmd_htop[]  = { "termite", "-e", "htop", NULL };
 static const char *mutecmd[] = { "amixer", "-q", "set", "Master", "toggle", NULL };
 static const char *volupcmd[] = { "amixer", "-q", "set", "Master", "5%+", "unmute", NULL };
 static const char *voldowncmd[] = { "amixer", "-q", "set", "Master", "5%-", "unmute", NULL };
-									a
+
 static Key keys[] = {
         /* modifier                     key                             function        argument */
-        { SUPERKEY,                     XK_d,                           spawn,          {.v = cmd_launcher } },
+        { SUPERKEY,                     XK_r,                           spawn,          {.v = cmd_launcher } },
 	{ SUPERKEY,                     XK_t,                           spawn,          {.v = cmd_terminal } },
 	{ SUPERKEY,                     XK_e,                           spawn,          {.v = cmd_fileexplorer } },
 	{ ShiftMask|ControlMask,        XK_Escape,                      spawn,          {.v = cmd_htop } },
