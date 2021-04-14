@@ -50,6 +50,11 @@ static const Layout layouts[] = {
 	{ "===",      bstackhoriz },
 };
 
+static const int monDefaultLayout[] = {
+	0,
+	1,
+};
+
 /* key definitions */
 #define MODKEY Mod1Mask
 #define SUPERKEY Mod4Mask
