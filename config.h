@@ -12,22 +12,28 @@ static const int user_bh            = 24;       /* 0 means that dwm will calcula
 static const char *fonts[]          = { "RobotoMono:size=10:antialias=true:autohint=true",
 					"JoyPixels:pixelsize=12:antialias=true:autohint=true" };
 static const char dmenufont[]       = "RobotoMono:size=10:antialias=true:autohint=true"; 
+
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
 static const char col_gray4[]       = "#eeeeee";
+static const char col_red2[]        = "#cc0022";
+static const char col_red[]         = "#a0182f";
 static const char col_cyan[]        = "#005577";
+static const char col_white[]        = "#ffffff";
+
 static const unsigned int baralpha = 0xd0;
 static const unsigned int borderalpha = OPAQUE;
+
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_gray4, col_cyan,  col_cyan  },
+	[SchemeSel]  = { col_white, col_red, col_red2 },
 };
 static const unsigned int alphas[][3]      = {
 	/*               fg      bg        border     */
 	[SchemeNorm] = { OPAQUE, baralpha, borderalpha },
-	[SchemeSel]  = { OPAQUE, baralpha, borderalpha },
+	[SchemeSel]  = { OPAQUE, OPAQUE, borderalpha },
 };
 
 /* tagging */
@@ -129,7 +135,7 @@ static Key keys[] = {
 	TAGKEYS(                        XK_1,                                           0)
 	TAGKEYS(                        XK_2,                                           1)
 	TAGKEYS(                        XK_3,                                           2)
-	TAGKEYS(                        XK_3,                                           3)
+	TAGKEYS(                        XK_4,                                           3)
 	{ MODKEY|ShiftMask,             XK_q,                           quit,           {0} },
 	{0,                             XK_Print,                       spawn,          {.v = cmd_printscreen } },
 	{ControlMask,                   XK_Print,                       spawn,          {.v = cmd_printedit } },
