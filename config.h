@@ -84,7 +84,7 @@ static const int monDefaultLayout[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *cmd_launcher[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
+static const char *cmd_launcher[] = { "dmenu_run", "-m", dmenumon, NULL };
 static const char *cmd_terminal[]  = { "termite", NULL };
 static const char *cmd_printscreen[]  = { "scrot","%Y-%m-%d_%H-%M-%S.jpg","-q100","-z","-e","mkdir --parents ~/images/screenshots","-e","mv $f ~/images/screenshots/", NULL };
 static const char *cmd_printedit[]  = { "scrot","%Y-%m-%d_%H-%M-%S.jpg","-q100","-z","-s","-f","-e","mkdir --parents ~/images/screenshots","-e","mv $f ~/images/screenshots/", NULL};
