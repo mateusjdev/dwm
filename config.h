@@ -138,6 +138,7 @@ static Key keys[] = {
 	TAGKEYS(                        XK_3,                                           2)
 	TAGKEYS(                        XK_4,                                           3)
 	{ MODKEY|ShiftMask,             XK_q,                           quit,           {0} },
+	{ MODKEY|ControlMask|ShiftMask, XK_q,    			quit,           {1} }, 
 	{0,                             XK_Print,                       spawn,          {.v = cmd_printscreen } },
 	{ControlMask,                   XK_Print,                       spawn,          {.v = cmd_printedit } },
 };
