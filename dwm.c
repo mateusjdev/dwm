@@ -240,6 +240,7 @@ static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void xinitvisual();
 static void zoom(const Arg *arg);
+static void zoommon(const Arg *arg);
 static void bstack(Monitor *m);
 static void bstackhoriz(Monitor *m);
 
@@ -2224,6 +2225,13 @@ zoom(const Arg *arg)
 		if (!c || !(c = nexttiled(c->next)))
 			return;
 	pop(c);
+}
+
+void zoommon(const Arg *arg) {
+	if (!selmon->sel || !mons->next || !mons->clients || !mons->next->clients)
+		return;
+	sendmon(selmon->sel, dirtomon(arg->i));
+	sendmon(dirtomon(arg->i)->clients->next, selmon);
 }
 
 int
