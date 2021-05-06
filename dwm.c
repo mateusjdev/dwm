@@ -169,6 +169,7 @@ static void drawbars(void);
 static void enqueue(Client *c);
 static void enqueuestack(Client *c);
 static void enternotify(XEvent *e);
+static void swapmon(Client *fc, Monitor *fm, Client *sc, Monitor *sm);
 static void expose(XEvent *e);
 static void focus(Client *c);
 static void focusin(XEvent *e);
@@ -246,7 +247,7 @@ static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void xinitvisual();
 static void zoom(const Arg *arg);
-static void zoommon(const Arg *arg);
+static void swapmonsmaster(const Arg *arg);
 static void bstack(Monitor *m);
 static void bstackhoriz(Monitor *m);
 
@@ -1537,6 +1538,33 @@ sendmon(Client *c, Monitor *m)
 	arrange(NULL);
 }
 
+void swapmon(Client *fc, Monitor *fm, Client *sc, Monitor *sm){
+	if (fc->mon == fm || sc->mon == sm || fc == sc || fm == sm)
+		return;
+
+	// first cliente & monitor
+	unfocus(fc, 1);
+	detach(fc);
+	detachstack(fc);
+	fc->mon = fm;
+	fc->tags = fm->tagset[fm->seltags]; /* assign tags of target monitor */
+	attach(fc);
+	attachstack(fc);
+
+	// second cliente & monitor
+	unfocus(sc, 1);
+	detach(sc);
+	detachstack(sc);
+	sc->mon = sm;
+	sc->tags = sm->tagset[sm->seltags]; /* assign tags of target monitor */
+	attach(sc);
+	attachstack(sc);
+
+	// align all
+	focus(NULL);
+	arrange(NULL);
+}
+
 void
 setclientstate(Client *c, long state)
 {
@@ -2333,11 +2361,10 @@ zoom(const Arg *arg)
 	pop(c);
 }
 
-void zoommon(const Arg *arg) {
-	if (!selmon->sel || !mons->next || !mons->clients || !mons->next->clients)
+void swapmonsmaster(const Arg *arg) {
+	if (!selmon->clients || !mons->next || !mons->clients || !mons->next->clients)
 		return;
-	sendmon(selmon->sel, dirtomon(arg->i));
-	sendmon(dirtomon(arg->i)->clients->next, selmon);
+	swapmon(selmon->clients, dirtomon(arg->i), dirtomon(arg->i)->clients, selmon);
 }
 
 int
