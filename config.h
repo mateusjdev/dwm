@@ -3,34 +3,37 @@
 #include <X11/XF86keysym.h>
 
 /* appearance */
-static const unsigned int borderpx  = 1;        /* border pixel of windows */
-static const unsigned int gappx     = 3;        /* gaps between windows */
-static const unsigned int snap      = 32;       /* snap pixel */
-static const int showbar            = 1;        /* 0 means no bar */
-static const int topbar             = 1;        /* 0 means bottom bar */
-static const int user_bh            = 24;       /* 0 means that dwm will calculate bar height, >= 1 means dwm will user_bh as bar height */
-static const char *fonts[]          = { "RobotoMono:size=10:antialias=true:autohint=true",
-					"JoyPixels:pixelsize=12:antialias=true:autohint=true" };
-static const char dmenufont[]       = "RobotoMono:size=10:antialias=true:autohint=true"; 
+static const unsigned int borderpx	= 1;        /* border pixel of windows */
+static const unsigned int gappx		= 3;        /* gaps between windows */
+static const unsigned int snap		= 32;       /* snap pixel */
+static const int showbar		= 1;        /* 0 means no bar */
+static const int topbar			= 1;        /* 0 means bottom bar */
+static const int user_bh		= 24;       /* 0 means that dwm will calculate bar height, >= 1 means dwm will user_bh as bar height */
 
-static const char col_gray1[]       = "#222222";
-static const char col_gray2[]       = "#444444";
-static const char col_gray3[]       = "#bbbbbb";
-static const char col_gray4[]       = "#eeeeee";
-static const char col_red2[]        = "#cc0022";
-static const char col_red[]         = "#a0182f";
-static const char col_cyan[]        = "#005577";
-static const char col_white[]        = "#ffffff";
+static const char *fonts[] 		= { "RobotoMono:size=10:antialias=true:autohint=true",
+					    "JoyPixels:pixelsize=12:antialias=true:autohint=true" };
 
-static const unsigned int baralpha = 0xd0;
-static const unsigned int borderalpha = OPAQUE;
+static const char col_gray1[]		= "#222222";
+static const char col_gray2[]		= "#444444";
+static const char col_gray3[]		= "#bbbbbb";
+static const char col_gray4[]		= "#eeeeee";
+static const char col_red[]		= "#a0182f";
+static const char col_red2[]		= "#cc0022";
+static const char col_cyan[]		= "#005577";
+static const char col_white[]		= "#ffffff";
 
-static const char *colors[][3]      = {
+static const unsigned int baralpha	= 0xd0;
+static const unsigned int borderalpha	= OPAQUE;
+
+static const char terminal[] 		= "alacritty";
+
+static const char *colors[][3] = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
 	[SchemeSel]  = { col_white, col_red, col_red2 },
 };
-static const unsigned int alphas[][3]      = {
+
+static const unsigned int alphas[][3] = {
 	/*               fg      bg        border     */
 	[SchemeNorm] = { OPAQUE, baralpha, borderalpha },
 	[SchemeSel]  = { OPAQUE, OPAQUE, borderalpha },
@@ -45,8 +48,10 @@ static const Rule rules[] = {
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
 	 */
-	/* class      instance    title       tags mask     isfloating   monitor */
-	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
+	/* class	instance	title	tags mask	isfloating	monitor */
+	{ "Gimp",     	NULL,       	NULL,   0,       	1,           	-1 },
+	{ "mpv",      	NULL,       	NULL,   0,            	0,		1 },
+	{ "Sxiv",      	NULL,       	NULL,	0,            	0,		1 },
 };
 
 /* layout(s) */
@@ -85,13 +90,14 @@ static const int monDefaultLayout[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *cmd_launcher[] = { "dmenu_run", "-m", dmenumon, NULL };
-static const char *cmd_terminal[]  = { "termite", NULL };
-static const char *cmd_printscreen[]  = { "scrot","%Y-%m-%d_%H-%M-%S.jpg","-q100","-z","-e","mkdir --parents ~/images/screenshots","-e","mv $f ~/images/screenshots/", NULL };
-static const char *cmd_printedit[]  = { "scrot","%Y-%m-%d_%H-%M-%S.jpg","-q100","-z","-s","-f","-e","mkdir --parents ~/images/screenshots","-e","mv $f ~/images/screenshots/", NULL};
 
-static const char *cmd_fileexplorer[]  = { "termite", "-e", "lf", NULL };
-static const char *cmd_htop[]  = { "termite", "-e", "htop", NULL };
+static const char *cmd_launcher[] = { "dmenu_run", "-m", dmenumon, NULL };
+static const char *cmd_terminal[] = { terminal, NULL };
+static const char *cmd_printscreen[] = { "scrot","%Y-%m-%d_%H-%M-%S.jpg","-q100","-z","-e","mkdir --parents ~/images/screenshots","-e","mv $f ~/images/screenshots/", NULL };
+static const char *cmd_printedit[] = { "scrot","%Y-%m-%d_%H-%M-%S.jpg","-q100","-z","-s","-f","-e","mkdir --parents ~/images/screenshots","-e","mv $f ~/images/screenshots/", NULL};
+
+static const char *cmd_fileexplorer[] = { "pcmanfm", NULL };
+static const char *cmd_htop[] = { terminal, "-e", "htop", NULL };
 
 static const char *mutecmd[] = { "amixer", "-q", "set", "Master", "toggle", NULL };
 static const char *volupcmd[] = { "amixer", "-q", "set", "Master", "5%+", "unmute", NULL };
