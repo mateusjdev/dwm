@@ -25,7 +25,7 @@ static const char col_white[]		= "#ffffff";
 static const unsigned int baralpha	= 0xd0;
 static const unsigned int borderalpha	= OPAQUE;
 
-static const char terminal[] 		= "alacritty";
+static const char TERMINAL[] 		= "alacritty";
 
 static const char *colors[][3] = {
 	/*               fg         bg         border   */
@@ -91,13 +91,10 @@ static const int monDefaultLayout[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 
-static const char *cmd_launcher[] = { "dmenu_run", "-m", dmenumon, NULL };
-static const char *cmd_terminal[] = { terminal, NULL };
-static const char *cmd_printscreen[] = { "scrot","%Y-%m-%d_%H-%M-%S.jpg","-q100","-z","-e","mkdir --parents ~/images/screenshots","-e","mv $f ~/images/screenshots/", NULL };
-static const char *cmd_printedit[] = { "scrot","%Y-%m-%d_%H-%M-%S.jpg","-q100","-z","-s","-f","-e","mkdir --parents ~/images/screenshots","-e","mv $f ~/images/screenshots/", NULL};
-
-static const char *cmd_fileexplorer[] = { "pcmanfm", NULL };
-static const char *cmd_htop[] = { terminal, "-e", "htop", NULL };
+static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, NULL };
+static const char *htopcmd[] = { TERMINAL, "-e", "htop", NULL };
+static const char *printcmd[] = { "scrot","%Y-%m-%d_%H-%M-%S.jpg","-q100","-z","-e","mkdir --parents ~/images/screenshots","-e","mv $f ~/images/screenshots/", NULL };
+static const char *printscmd[] = { "scrot","%Y-%m-%d_%H-%M-%S.jpg","-q100","-z","-s","-f","-e","mkdir --parents ~/images/screenshots","-e","mv $f ~/images/screenshots/", NULL};
 
 static const char *mutecmd[] = { "amixer", "-q", "set", "Master", "toggle", NULL };
 static const char *volupcmd[] = { "amixer", "-q", "set", "Master", "5%+", "unmute", NULL };
@@ -105,13 +102,20 @@ static const char *voldowncmd[] = { "amixer", "-q", "set", "Master", "5%-", "unm
 
 static Key keys[] = {
         /* modifier                     key                             function        argument */
-        { SUPERKEY,                     XK_r,                           spawn,          {.v = cmd_launcher } },
-	{ SUPERKEY,                     XK_t,                           spawn,          {.v = cmd_terminal } },
-	{ SUPERKEY,                     XK_e,                           spawn,          {.v = cmd_fileexplorer } },
-	{ ShiftMask|ControlMask,        XK_Escape,                      spawn,          {.v = cmd_htop } },
+        { SUPERKEY,                     XK_r,                           spawn,          {.v = dmenucmd } },
+	{ SUPERKEY,                     XK_t,                           spawn,          SHCMD(TERMINAL) },
+	{ SUPERKEY,                     XK_e,                           spawn,          SHCMD("pcmanfm") },
+	{ ShiftMask|ControlMask,        XK_Escape,                      spawn,          {.v = htopcmd } },
+	{ SUPERKEY,			XK_v,				spawn,          SHCMD("clipmenu") },
+	{0,                             XK_Print,                       spawn,          {.v = printcmd } },
+	{ ControlMask,			XK_Print,			spawn,          {.v = printscmd } },
+	{ SUPERKEY|ShiftMask,		XK_s,				spawn,          {.v = printscmd } },
+
+	// Function Keys
 	{ 0,                            XF86XK_AudioMute,               spawn,          {.v = mutecmd } },
 	{ 0,                            XF86XK_AudioLowerVolume,        spawn,          {.v = voldowncmd } },
 	{ 0,                            XF86XK_AudioRaiseVolume,        spawn,          {.v = volupcmd } },
+
 	{ MODKEY,                       XK_b,                           togglebar,      {0} },
 	{ MODKEY,                       XK_j,                           focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,                           focusstack,     {.i = -1 } },
@@ -125,6 +129,7 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_Return,                      swapmonsmaster, {0} },
 	{ MODKEY,                       XK_Tab,                         view,           {0} },
 	{ MODKEY|ShiftMask,             XK_c,                           killclient,     {0} },
+
 	{ MODKEY,                       XK_t,                           setlayout,      {.v = &layouts[0]} },
 	{ MODKEY|ShiftMask,             XK_t,                           setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_f,                           setlayout,      {.v = &layouts[2]} },
@@ -132,6 +137,7 @@ static Key keys[] = {
 	{ MODKEY,                       XK_u,      			setlayout,      {.v = &layouts[4]} },
 	{ MODKEY,                       XK_o,      			setlayout,      {.v = &layouts[5]} },
 	{ MODKEY,                       XK_g,      			setlayout,      {.v = &layouts[6]} },
+
 	{ MODKEY,                       XK_space,                       setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,                       togglefloating, {0} },
 	{ MODKEY,                       XK_0,                           view,           {.ui = ~0 } },
@@ -149,24 +155,11 @@ static Key keys[] = {
 	TAGKEYS(                        XK_4,                                           3)
 	{ MODKEY|ShiftMask,             XK_q,                           quit,           {0} },
 	{ MODKEY|ControlMask|ShiftMask, XK_q,    			quit,           {1} }, 
-	{0,                             XK_Print,                       spawn,          {.v = cmd_printscreen } },
-	{ControlMask,                   XK_Print,                       spawn,          {.v = cmd_printedit } },
 };
 
 /* button definitions */
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
 static Button buttons[] = {
 	/* click                event mask      button          function        argument */
-	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
-	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
-	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
-	{ ClkStatusText,        0,              Button2,        spawn,          {.v = cmd_terminal } },
-	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
-	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
-	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
 	{ ClkTagBar,            0,              Button1,        view,           {0} },
-	{ ClkTagBar,            0,              Button3,        toggleview,     {0} },
-	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
-	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
 };
-
