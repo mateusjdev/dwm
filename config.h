@@ -4,7 +4,7 @@
 
 /* appearance */
 static const unsigned int borderpx	= 1;        /* border pixel of windows */
-static const unsigned int gappx		= 3;        /* gaps between windows */
+static const unsigned int gappx		= 6;        /* gaps between windows */
 static const unsigned int snap		= 32;       /* snap pixel */
 static const int showbar		= 1;        /* 0 means no bar */
 static const int topbar			= 1;        /* 0 means bottom bar */
@@ -96,9 +96,9 @@ static const char *htopcmd[] = { TERMINAL, "-e", "htop", NULL };
 static const char *printcmd[] = { "scrot","%Y-%m-%d_%H-%M-%S.jpg","-q100","-z","-e","mkdir --parents ~/images/screenshots","-e","mv $f ~/images/screenshots/", NULL };
 static const char *printscmd[] = { "scrot","%Y-%m-%d_%H-%M-%S.jpg","-q100","-z","-s","-f","-e","mkdir --parents ~/images/screenshots","-e","mv $f ~/images/screenshots/", NULL};
 
-static const char *mutecmd[] = { "amixer", "-q", "set", "Master", "toggle", NULL };
-static const char *volupcmd[] = { "amixer", "-q", "set", "Master", "5%+", "unmute", NULL };
-static const char *voldowncmd[] = { "amixer", "-q", "set", "Master", "5%-", "unmute", NULL };
+static const char *mutecmd[] = { "amixer", "-q", "-D", "pulse", "set", "Master", "toggle", NULL };
+static const char *volupcmd[] = { "amixer", "-q", "-D", "pulse", "set", "Master", "5%+", "unmute", NULL };
+static const char *voldowncmd[] = { "amixer", "-q", "-D", "pulse", "set", "Master", "5%-", "unmute", NULL };
 
 static Key keys[] = {
         /* modifier                     key                             function        argument */
@@ -161,5 +161,13 @@ static Key keys[] = {
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
 static Button buttons[] = {
 	/* click                event mask      button          function        argument */
+	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
+	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
+	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
+	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
+	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
 	{ ClkTagBar,            0,              Button1,        view,           {0} },
+	{ ClkTagBar,            0,              Button3,        toggleview,     {0} },
+	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
+	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
 };
