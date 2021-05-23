@@ -96,10 +96,6 @@ static const char *htopcmd[] = { TERMINAL, "-e", "htop", NULL };
 static const char *printcmd[] = { "scrot","%Y-%m-%d_%H-%M-%S.jpg","-q100","-z","-e","mkdir --parents ~/images/screenshots","-e","mv $f ~/images/screenshots/", NULL };
 static const char *printscmd[] = { "scrot","%Y-%m-%d_%H-%M-%S.jpg","-q100","-z","-s","-f","-e","mkdir --parents ~/images/screenshots","-e","mv $f ~/images/screenshots/", NULL};
 
-static const char *mutecmd[] = { "amixer", "-q", "-D", "pulse", "set", "Master", "toggle", NULL };
-static const char *volupcmd[] = { "amixer", "-q", "-D", "pulse", "set", "Master", "5%+", "unmute", NULL };
-static const char *voldowncmd[] = { "amixer", "-q", "-D", "pulse", "set", "Master", "5%-", "unmute", NULL };
-
 static Key keys[] = {
         /* modifier                     key                             function        argument */
         { SUPERKEY,                     XK_r,                           spawn,          {.v = dmenucmd } },
@@ -112,9 +108,9 @@ static Key keys[] = {
 	{ SUPERKEY|ShiftMask,		XK_s,				spawn,          {.v = printscmd } },
 
 	// Function Keys
-	{ 0,                            XF86XK_AudioMute,               spawn,          {.v = mutecmd } },
-	{ 0,                            XF86XK_AudioLowerVolume,        spawn,          {.v = voldowncmd } },
-	{ 0,                            XF86XK_AudioRaiseVolume,        spawn,          {.v = volupcmd } },
+	{ 0,                            XF86XK_AudioMute,               spawn,          SHCMD("amixer -q -D pulse set Master toggle") },
+	{ 0,                            XF86XK_AudioLowerVolume,        spawn,          SHCMD("amixer -q -D pulse set Master 2%- unmute; pkill -RTMIN+1 dwmblocks") },
+	{ 0,                            XF86XK_AudioRaiseVolume,        spawn,          SHCMD("amixer -q -D pulse set Master 2%+ unmute; pkill -RTMIN+1 dwmblocks") },
 
 	{ MODKEY,                       XK_b,                           togglebar,      {0} },
 	{ MODKEY,                       XK_j,                           focusstack,     {.i = +1 } },
