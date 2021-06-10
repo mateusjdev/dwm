@@ -63,11 +63,11 @@ static const Layout layouts[] = {
 	/* symbol     arrange function */
 	{ "[]=",      ltile },    /* first entry is default */
 	{ "=[]",      rtile },
-	{ "><>",      NULL },    /* no layout function means floating behavior */
 	{ "[M]",      monocle },
+	{ "HHH",      grid },
+	{ "><>",      NULL },    /* no layout function means floating behavior */
 	{ "TTT",      bstack },
 	{ "===",      bstackhoriz },
-	{ "HHH",      grid },
 };
 
 static const int monDefaultLayout[] = {
@@ -126,13 +126,13 @@ static Key keys[] = {
 	{ MODKEY,                       XK_Tab,                         view,           {0} },
 	{ MODKEY|ShiftMask,             XK_c,                           killclient,     {0} },
 
-	{ MODKEY,                       XK_t,                           setlayout,      {.v = &layouts[0]} },
-	{ MODKEY|ShiftMask,             XK_t,                           setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       XK_f,                           setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                       XK_m,                           setlayout,      {.v = &layouts[3]} },
-	{ MODKEY,                       XK_u,      			setlayout,      {.v = &layouts[4]} },
-	{ MODKEY,                       XK_o,      			setlayout,      {.v = &layouts[5]} },
-	{ MODKEY,                       XK_g,      			setlayout,      {.v = &layouts[6]} },
+	{ SUPERKEY,			XK_1,                           setlayout,      {.v = &layouts[0]} },
+	{ SUPERKEY,			XK_2,                           setlayout,      {.v = &layouts[1]} },
+	{ SUPERKEY,			XK_3,                           setlayout,      {.v = &layouts[2]} },
+	{ SUPERKEY,			XK_4,                           setlayout,      {.v = &layouts[3]} },
+	{ SUPERKEY,			XK_5,      			setlayout,      {.v = &layouts[4]} },
+	{ SUPERKEY,			XK_6,      			setlayout,      {.v = &layouts[5]} },
+	{ SUPERKEY,			XK_7,      			setlayout,      {.v = &layouts[6]} },
 
 	{ MODKEY,                       XK_space,                       setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,                       togglefloating, {0} },
