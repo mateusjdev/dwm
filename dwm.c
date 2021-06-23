@@ -169,7 +169,7 @@ static void drawbars(void);
 static void enqueue(Client *c);
 static void enqueuestack(Client *c);
 static void enternotify(XEvent *e);
-static void swapmon(Client *fc, Monitor *fm, Client *sc, Monitor *sm);
+static void swapmon(Monitor *fm, Monitor *sm);
 static void expose(XEvent *e);
 static void focus(Client *c);
 static void focusin(XEvent *e);
@@ -1538,16 +1538,26 @@ sendmon(Client *c, Monitor *m)
 	arrange(NULL);
 }
 
-void swapmon(Client *fc, Monitor *fm, Client *sc, Monitor *sm){
-	if (fc->mon == fm || sc->mon == sm || fc == sc || fm == sm)
+void swapmon(Monitor *fm, Monitor *sm){
+	if (fm == sm)
 		return;
+	
+	Client *fc = fm->clients;
+	for(;!(fc->tags & fm->tagset[fm->seltags]);fc = fc->next)
+		if(!fc->next)
+			return;
+
+	Client *sc = sm->clients;
+	for(;!(sc->tags & sm->tagset[sm->seltags]);sc = sc->next)
+		if(!sc->next)
+			return;
 
 	// first cliente & monitor
 	unfocus(fc, 1);
 	detach(fc);
 	detachstack(fc);
-	fc->mon = fm;
-	fc->tags = fm->tagset[fm->seltags]; /* assign tags of target monitor */
+	fc->mon = sm;
+	fc->tags = sm->tagset[sm->seltags]; /* assign tags of target monitor */
 	attach(fc);
 	attachstack(fc);
 
@@ -1555,8 +1565,8 @@ void swapmon(Client *fc, Monitor *fm, Client *sc, Monitor *sm){
 	unfocus(sc, 1);
 	detach(sc);
 	detachstack(sc);
-	sc->mon = sm;
-	sc->tags = sm->tagset[sm->seltags]; /* assign tags of target monitor */
+	sc->mon = fm;
+	sc->tags = fm->tagset[fm->seltags]; /* assign tags of target monitor */
 	attach(sc);
 	attachstack(sc);
 
@@ -2362,9 +2372,10 @@ zoom(const Arg *arg)
 }
 
 void swapmonsmaster(const Arg *arg) {
-	if (!selmon->clients || !mons->next || !mons->clients || !mons->next->clients)
+	if(!selmon || !dirtomon(arg->i))
 		return;
-	swapmon(selmon->clients, dirtomon(arg->i), dirtomon(arg->i)->clients, selmon);
+
+	swapmon(selmon, dirtomon(arg->i));
 }
 
 int
