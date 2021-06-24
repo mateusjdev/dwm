@@ -1539,7 +1539,10 @@ sendmon(Client *c, Monitor *m)
 }
 
 void swapmon(Monitor *fm, Monitor *sm){
-	if (fm == sm)
+	if (fm == sm || !fm || !sm)
+		return;
+
+	if(!fm->clients || !sm->clients)
 		return;
 	
 	Client *fc = fm->clients;
