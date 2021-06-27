@@ -169,7 +169,6 @@ static void drawbars(void);
 static void enqueue(Client *c);
 static void enqueuestack(Client *c);
 static void enternotify(XEvent *e);
-static void swapmon(Monitor *fm, Monitor *sm);
 static void expose(XEvent *e);
 static void focus(Client *c);
 static void focusin(XEvent *e);
@@ -204,7 +203,7 @@ static void rotatestack(const Arg *arg);
 static void run(void);
 static void scan(void);
 static int sendevent(Client *c, Atom proto);
-static void sendmon(Client *c, Monitor *m);
+static void sendmon(Client *c, Monitor *m, int arrange);
 static void setclientstate(Client *c, long state);
 static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
@@ -247,7 +246,8 @@ static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void xinitvisual();
 static void zoom(const Arg *arg);
-static void swapmonsmaster(const Arg *arg);
+static void swapmon(const Arg *arg);
+static void pullmon(const Arg *arg);
 static void bstack(Monitor *m);
 static void bstackhoriz(Monitor *m);
 
@@ -1268,7 +1268,7 @@ movemouse(const Arg *arg)
 	} while (ev.type != ButtonRelease);
 	XUngrabPointer(dpy, CurrentTime);
 	if ((m = recttomon(c->x, c->y, c->w, c->h)) != selmon) {
-		sendmon(c, m);
+		sendmon(c, m, 1);
 		selmon = m;
 		focus(NULL);
 	}
@@ -1421,7 +1421,7 @@ resizemouse(const Arg *arg)
 	XUngrabPointer(dpy, CurrentTime);
 	while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
 	if ((m = recttomon(c->x, c->y, c->w, c->h)) != selmon) {
-		sendmon(c, m);
+		sendmon(c, m, 1);
 		selmon = m;
 		focus(NULL);
 	}
@@ -1522,11 +1522,11 @@ scan(void)
 	}
 }
 
-void
-sendmon(Client *c, Monitor *m)
-{
+static void sendmon(Client *c, Monitor *m, int a) {
+	
 	if (c->mon == m)
 		return;
+
 	unfocus(c, 1);
 	detach(c);
 	detachstack(c);
@@ -1534,11 +1534,16 @@ sendmon(Client *c, Monitor *m)
 	c->tags = m->tagset[m->seltags]; /* assign tags of target monitor */
 	attach(c);
 	attachstack(c);
-	focus(NULL);
-	arrange(NULL);
+
+	if(a){
+		focus(NULL);
+		arrange(NULL);
+	}
 }
 
-void swapmon(Monitor *fm, Monitor *sm){
+static void swapmon(const Arg *arg) {
+	Monitor *fm = selmon, *sm = dirtomon(arg->i);
+
 	if (fm == sm || !fm || !sm)
 		return;
 
@@ -1555,27 +1560,24 @@ void swapmon(Monitor *fm, Monitor *sm){
 		if(!sc->next)
 			return;
 
-	// first cliente & monitor
-	unfocus(fc, 1);
-	detach(fc);
-	detachstack(fc);
-	fc->mon = sm;
-	fc->tags = sm->tagset[sm->seltags]; /* assign tags of target monitor */
-	attach(fc);
-	attachstack(fc);
+	sendmon(fc, sm, 0);
+	sendmon(sc, fm, 1);
+}
 
-	// second cliente & monitor
-	unfocus(sc, 1);
-	detach(sc);
-	detachstack(sc);
-	sc->mon = fm;
-	sc->tags = fm->tagset[fm->seltags]; /* assign tags of target monitor */
-	attach(sc);
-	attachstack(sc);
+static void pullmon(const Arg *arg) {
+	if (!selmon || !mons->next)
+		return;
 
-	// align all
-	focus(NULL);
-	arrange(NULL);
+	Monitor *m = dirtomon(arg->i);
+
+	if(m->clients){
+		Client *c = m->clients;
+		for(;!(c->tags & m->tagset[m->seltags]);c = c->next)
+			if(!c->next)
+				return;
+
+		sendmon(c, selmon, 1);
+	}
 }
 
 void
@@ -1850,7 +1852,7 @@ tagmon(const Arg *arg)
 {
 	if (!selmon->sel || !mons->next)
 		return;
-	sendmon(selmon->sel, dirtomon(arg->i));
+	sendmon(selmon->sel, dirtomon(arg->i), 1);
 }
 
 void ltile(Monitor *m) {
@@ -2372,13 +2374,6 @@ zoom(const Arg *arg)
 		if (!c || !(c = nexttiled(c->next)))
 			return;
 	pop(c);
-}
-
-void swapmonsmaster(const Arg *arg) {
-	if(!selmon || !dirtomon(arg->i))
-		return;
-
-	swapmon(selmon, dirtomon(arg->i));
 }
 
 int
